@@ -186,7 +186,7 @@ pipeline_process_packet(struct pipeline *pl, struct packet *pkt) {
 
         } else {
 			/* OpenFlow 1.3 default behavior on a table miss */
-			VLOG_DBG_RL(LOG_MODULE, &rl, "No matching entry found. Dropping packet.");
+	    VLOG_DBG_RL(LOG_MODULE, &rl, "No matching entry found. Dropping packet.");
             if(pkt->handle_std->proto->ipv4 != NULL){
                 static int cont=0;cont ++;
                 pkt->handle_std->table_miss = 1;
@@ -195,10 +195,13 @@ pipeline_process_packet(struct pipeline *pl, struct packet *pkt) {
                 printf("No.%d ipv4===%s\tpl_pc_pkt,dpid=%llu\t",cont,ctime(&timep),pkt->dp->id);
                 pkt->out_port = 0;
                 action_set_execute(pkt->action_set, pkt, 0xffffffffffffffff);
+            }else{
+                
+                packet_destroy(pkt);
+                return;
+
             }
-            
-			// packet_destroy(pkt);
-			return;
+
         }
     }
     VLOG_WARN_RL(LOG_MODULE, &rl, "Reached outside of pipeline processing cycle.");
